@@ -37,8 +37,10 @@
       <file leaf-file-name="parser.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/parser.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="53" column="0" selection-start="1756" selection-end="1756" vertical-scroll-proportion="0.57865167" vertical-offset="383" max-vertical-offset="1095">
-              <folding />
+            <state line="71" column="86" selection-start="2651" selection-end="2651" vertical-scroll-proportion="0.55423474" vertical-offset="692" max-vertical-offset="1710">
+              <folding>
+                <element signature="e#23#48#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -351,10 +353,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/sentence.dat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="712">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/parser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="0" selection-start="1756" selection-end="1756" vertical-scroll-proportion="0.57865167" vertical-offset="383" max-vertical-offset="1095">
-          <folding />
+        <state line="71" column="86" selection-start="2651" selection-end="2651" vertical-scroll-proportion="0.55423474" vertical-offset="692" max-vertical-offset="1710">
+          <folding>
+            <element signature="e#23#48#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
