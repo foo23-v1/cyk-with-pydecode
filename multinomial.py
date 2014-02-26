@@ -2,7 +2,7 @@ __author__ = 'Sarper'
 
 from itertools import imap
 from math import log
-
+import sys
 
 class MultinomialObject:
 
@@ -32,7 +32,7 @@ class Multinomial:
         return self.probs.get(identifier, 0.0)
 
     def log_prob(self,identifier):
-        return log(self.probs.get(identifier, 0.0))
+        return log(self.probs.get(identifier, sys.float_info.epsilon))
 
     def estimate(self):
         total = float(sum(imap(lambda x: x.count, self.objects.itervalues())))

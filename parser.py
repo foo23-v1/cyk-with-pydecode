@@ -34,7 +34,7 @@ class Counts:
                     self.unary[key] = count
                     self.term[terms[3]] += count
                     self.unary_rule_with_nonterm.setdefault(terms[2], {})
-                    self.unary_rule_with_nonterm[terms[2]][(terms[3])] = count
+                    self.unary_rule_with_nonterm[terms[2]][(terms[3],)] = count
 
                 elif terms[1] == 'BINARYRULE':
                     count = int(terms[0])
@@ -52,6 +52,11 @@ class Parser:
         self.table_of_multinomials = table_of_multinomials
         self.counts = counts
 
+    def build_potentials(self, edge):
+        return self.table_of_multinomials[edge[0]].log_prob(edge[1:])
+
+
+
     def parse(self, sentence):
         words = sentence.strip().split(" ")
         n = len(words)
@@ -64,31 +69,42 @@ class Parser:
             for i, word in enumerate(words, start=1):
                 relevant_rules = (rule for rule in self.counts.unary.iterkeys()
                                   if rule[1] == word)
-                nodes[(word, i, i)] = b.add_node(label=word)
+                nodes[(word, i, i)] = b.add_node(label=(word))
                 for rule in relevant_rules:
-                    node_str = "%s:%d:%d" % (rule[0], i, i)
-                    edge_str = "%s:%s" % (rule[0], rule[1])
-                    print node_str, edge_str
-                    nodes[(rule[0], i, i)] = b.add_node([([nodes[(rule[1], i, i)]], edge_str)],
-                                                        label=node_str)
-
+                    #node_str = "%s:%d:%d" % (rule[0], i, i)
+                    #edge_str = "%s:%s" % (rule[0], rule[1])
+                    #print node_str, edge_str
+                    nodes[(rule[0], i, i)] = b.add_node(
+                        [([nodes[(rule[1], i, i)]], (rule[0], rule[1]))],
+                        label=(rule[0], i, i))
             for l in xrange(1, n):
                 for i in xrange(1, n-l+1):
                     j = i+l
-                    for nonterminal in self.counts.binary_rule_with_nonterm.iterkeys():
+                    for nonterminal in\
+                            self.counts.binary_rule_with_nonterm.iterkeys():
                         edgelist = []
-                        for rule in self.counts.binary_rule_with_nonterm[nonterminal].iterkeys():
+                        for rule in \
+                                self.counts.binary_rule_with_nonterm[nonterminal].iterkeys():
                             for s in xrange(i, j):
-                                if (rule[0], i, s) in nodes.keys() and (rule[1], s+1, j) in nodes.keys():
-                                    edgelist.append(([nodes[(rule[0], i, s)], nodes[(rule[1], s+1, j)]], nonterminal+':'+rule[0]+':'+rule[1]))
+                                if (rule[0], i, s) in nodes.keys()\
+                                        and (rule[1], s+1, j) in nodes.keys():
+                                    edgelist.append((
+                                        [nodes[(rule[0], i, s)],
+                                         nodes[(rule[1], s+1, j)]],
+                                        (nonterminal, rule[0], rule[1])))
                         if edgelist:
-                            nodes[(nonterminal, str(i), str(j))] = b.add_node(edgelist, label=nonterminal+':'+str(i)+':'+str(j))
-            print nodes.keys()
-
+                            nodes[(nonterminal, i, j)] = b.add_node(edgelist, label=(nonterminal, i, j))
+        weights = ph.Potentials(sentence_graph).build(self.build_potentials)
+        path = ph.best_path(sentence_graph, weights)
+        # for edge in path.edges:
+        #     print edge.label, self.build_potentials(edge.label)
     def parse_file(self, input_file):
+        count = 1
         with open(input_file) as f:
             for sentence in f:
                 self.parse(sentence)
+            print count
+            count += 1
 
 
 def main():
@@ -102,7 +118,9 @@ def main():
         nonterm_counts.update(counts.unary_rule_with_nonterm.get(nonterm, {}))
         table_of_multinomials.create(nonterm, nonterm_counts)
     parser = Parser(table_of_multinomials, counts)
-    parser.parse_file('sentence.dat')
+    parser.parse_file('parse_dev.dat')
+
+
 
 if __name__ == "__main__":
     main()
