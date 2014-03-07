@@ -55,8 +55,6 @@ class Parser:
     def build_potentials(self, edge):
         return self.table_of_multinomials[edge[0]].log_prob(edge[1:])
 
-
-
     def parse(self, sentence):
         words = sentence.strip().split(" ")
         n = len(words)
@@ -71,9 +69,6 @@ class Parser:
                                   if rule[1] == word)
                 nodes[(word, i, i)] = b.add_node(label=(word))
                 for rule in relevant_rules:
-                    #node_str = "%s:%d:%d" % (rule[0], i, i)
-                    #edge_str = "%s:%s" % (rule[0], rule[1])
-                    #print node_str, edge_str
                     nodes[(rule[0], i, i)] = b.add_node(
                         [([nodes[(rule[1], i, i)]], (rule[0], rule[1]))],
                         label=(rule[0], i, i))
@@ -93,18 +88,17 @@ class Parser:
                                          nodes[(rule[1], s+1, j)]],
                                         (nonterminal, rule[0], rule[1])))
                         if edgelist:
-                            nodes[(nonterminal, i, j)] = b.add_node(edgelist, label=(nonterminal, i, j))
+                            nodes[(nonterminal, i, j)] =\
+                                b.add_node(edgelist, label=(nonterminal, i, j))
         weights = ph.Potentials(sentence_graph).build(self.build_potentials)
         path = ph.best_path(sentence_graph, weights)
-        # for edge in path.edges:
-        #     print edge.label, self.build_potentials(edge.label)
+        for edge in path.edges:
+            print edge.label, self.build_potentials(edge.label)
+
     def parse_file(self, input_file):
-        count = 1
         with open(input_file) as f:
             for sentence in f:
                 self.parse(sentence)
-                print count
-                count += 1
 
 
 def main():
@@ -118,8 +112,7 @@ def main():
         nonterm_counts.update(counts.unary_rule_with_nonterm.get(nonterm, {}))
         table_of_multinomials.create(nonterm, nonterm_counts)
     parser = Parser(table_of_multinomials, counts)
-    parser.parse_file('parse_dev.dat')
-
+    parser.parse_file('sentence.dat')
 
 
 if __name__ == "__main__":

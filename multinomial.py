@@ -1,8 +1,10 @@
+from __future__ import division
 __author__ = 'Sarper'
 
 from itertools import imap
 from math import log
 import sys
+
 
 class MultinomialObject:
 
@@ -25,17 +27,14 @@ class Multinomial:
                         for key in counts.iterkeys()}
         self.probs = {}
 
-    def prob(self, identifier):
-        return self.probs.get(identifier, 0.0)
-
     def __getitem__(self, identifier):
         return self.probs.get(identifier, 0.0)
 
-    def log_prob(self,identifier):
+    def log_prob(self, identifier):
         return log(self.probs.get(identifier, sys.float_info.epsilon))
 
     def estimate(self):
-        total = float(sum(imap(lambda x: x.count, self.objects.itervalues())))
+        total = sum(x.count for x in self.objects.itervalues())
         self.probs = {key: self.objects[key].count/total
                       for key in self.objects.iterkeys()}
 
@@ -57,7 +56,7 @@ class TableOfMultinomial:
             self.create(identifier, count)
 
     def estimate(self):
-        map(lambda x: x.estimate(), self.multinomials.itervalues())
+        (x.estimate() for x in self.multinomials.itervalues())
 
     def __getitem__(self, item):
         return self.multinomials[item]
