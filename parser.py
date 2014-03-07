@@ -103,8 +103,8 @@ class Parser:
         with open(input_file) as f:
             for sentence in f:
                 self.parse(sentence)
-            print count
-            count += 1
+                print count
+                count += 1
 
 
 def main():
