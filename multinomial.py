@@ -41,6 +41,9 @@ class Multinomial:
     def increment(self, item, amount=1):
         self.objects[item].count += amount
 
+    def __iter__(self):
+        return self.objects.iterkeys()
+
 
 class TableOfMultinomial:
 
@@ -56,7 +59,11 @@ class TableOfMultinomial:
             self.create(identifier, count)
 
     def estimate(self):
-        (x.estimate() for x in self.multinomials.itervalues())
+        for x in self.multinomials.itervalues():
+            x.estimate()
 
     def __getitem__(self, item):
         return self.multinomials[item]
+
+    def __iter__(self):
+        return self.multinomials.iterkeys()
