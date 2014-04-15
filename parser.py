@@ -168,8 +168,8 @@ class Parser:
                             for s in xrange(i, j):
                                 rule_span1 = RuleSpan(rule.rhs_first, i, s)
                                 rule_span2 = RuleSpan(rule.rhs_second, s+1, j)
-                                if rule_span1 in nodes.keys()\
-                                        and rule_span2 in nodes.keys():
+                                if rule_span1 in nodes \
+                                        and rule_span2 in nodes:
                                     edgelist.append((
                                         [nodes[rule_span1],
                                          nodes[rule_span2]],
@@ -183,7 +183,7 @@ class Parser:
     def best_path(self, sentence_graph):
 
         pv = self.build_potential_map(sentence_graph)
-        weights = ph.Potentials(sentence_graph).from_map(pv)
+        weights = ph.LogViterbiPotentials(sentence_graph).from_map(pv)
         path = ph.best_path(sentence_graph, weights)
 
         return path
@@ -229,7 +229,7 @@ class Parser:
                             nodes[rs] = b.add_node(edgelist, label=rs)
 
         pv = self.build_potential_map(sentence_graph)
-        weights = ph.Potentials(sentence_graph).from_map(pv)
+        weights = ph.LogViterbiPotentials(sentence_graph).from_map(pv)
         path = ph.best_path(sentence_graph, weights)
         for edge in path.edges:
             print edge.label, self.build_potentials(edge.label)
@@ -274,8 +274,11 @@ class Parser:
                 gold_parse = json.loads(gold_parse_json)
                 gold_edge_list = set()
                 self.get_edge_list(gold_parse, gold_edge_list)
+                print >>sys.stderr, "prebuild"
                 words, sentence_graph = self.build_hypergraph(sentence)
+                print >>sys.stderr, "postbuild"
                 path = self.best_path(sentence_graph)
+                print >>sys.stderr, "best path"
                 result_tree = self.print_path(path.nodes[len(path.nodes)-1], path, sentence)
                 print >> cky, json.dumps(result_tree)
 
